@@ -1,6 +1,6 @@
 const User = require("../models/userModel");
 const bcryptjs = require("bcryptjs");
-
+const jwt = require('jsonwebtoken')
 const signup = async (req, res) => {
   try {
     const { username, email, password, bio, profile, phonenumber } = req.body;
@@ -18,6 +18,9 @@ const signup = async (req, res) => {
       });
     }
     const hashPassword = await bcryptjs.hash(password, 10);
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
     const createUser = new User({
       username: username,
       email: email,
@@ -37,6 +40,7 @@ const signup = async (req, res) => {
         profile: createUser.profile,
         phonenumber: createUser.phonenumber,
       },
+      token,
     });
   } catch (error) {
     console.log("ERROR: " + error.message);
@@ -57,6 +61,9 @@ const login = async (req, res) => {
         message: "Invalid email or password",
       });
     } else {
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
       res.status(200).json({
         message: "Login Successfully..",
         user: {
@@ -67,6 +74,7 @@ const login = async (req, res) => {
           profile: user.profile,
           phonenumber: user.phonenumber,
         },
+        token,
       });
     }
   } catch (error) {

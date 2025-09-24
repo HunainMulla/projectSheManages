@@ -26,8 +26,11 @@ function Login() {
       .then((res) => {
         console.log(res.data);
         if (res.data) {
+          const {token} = res.data;
+          console.log(token);
           toast.success("Logged In Successfully");
           localStorage.setItem("Users", JSON.stringify(res.data.user));
+          localStorage.setItem("token", token);
           navigate("/");
           window.location.reload();
         }
