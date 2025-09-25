@@ -2,10 +2,9 @@ const User = require("../models/userModel");
 const bcryptjs = require("bcryptjs");
 const jwt = require('jsonwebtoken')
 
-const jwt = require("jsonwebtoken");
 
 const generateAccessToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "15m" });
+  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "1m" });
 };
 
 const generateRefreshToken = (userId) => {
@@ -41,7 +40,7 @@ const signup = async (req, res) => {
     // Set cookie for refresh token
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // true in production with HTTPS
+      // secure: process.env.NODE_ENV === "production", // true in production with HTTPS
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -56,7 +55,7 @@ const signup = async (req, res) => {
         profile: createUser.profile,
         phonenumber: createUser.phonenumber,
       },
-      accessToken, // client saves in localStorage
+      token: accessToken, // client saves in localStorage
     });
   } catch (error) {
     console.log("ERROR: " + error.message);
@@ -78,7 +77,7 @@ const login = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      // secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -93,7 +92,7 @@ const login = async (req, res) => {
         profile: user.profile,
         phonenumber: user.phonenumber,
       },
-      accessToken, // client saves in localStorage
+      token: accessToken, // client saves in localStorage
     });
   } catch (error) {
     console.log("ERROR: " + error.message);
@@ -170,7 +169,7 @@ const refreshAccessToken = (req, res) => {
     if (err) return res.status(403).json({ message: "Invalid refresh token" });
 
     const newAccessToken = generateAccessToken(decoded.userId);
-    res.json({ accessToken: newAccessToken });
+    res.json({ token: newAccessToken });
   });
 };
 
