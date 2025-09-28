@@ -8,11 +8,11 @@ const verifyAuth = (req, res, next) => {
       return res.status(401).json({ message: "No token provided" });
     }
 
-    const token = authHeader.split(" ")[1]; // Bearer <token>
+    const token = authHeader.split(" ")[1]; 
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
-        if (err.name === "TokenExpiredError") {
+        if (err.name === "TokenExpiredError" || err.message === "jwt expired") {
           return res.status(401).json({ message: "Access token expired" });
         }
         return res.status(403).json({ message: "Invalid token" });

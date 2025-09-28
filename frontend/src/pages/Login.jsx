@@ -22,7 +22,9 @@ function Login() {
       password: data.password,
     };
     await axios
-      .post(`${baseUrl}/user/login`, userInfo)
+      .post(`${baseUrl}/user/login`, userInfo, {
+        withCredentials: true,
+      })
       .then((res) => {
         console.log(res.data);
         if (res.data) {

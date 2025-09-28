@@ -6,8 +6,7 @@ const userRoute = require("./routes/user.route");
 const productRoutes = require("./routes/productRoutes");
 const app = express();
 const ideaRoutes = require("./routes/ideaRoutes");
-const verifyToken = require("./middleware/verifyToken");
-
+const cookieParser = require("cookie-parser");
 app.use(
   cors({
     origin: ["https://projectshemanages.vercel.app", "http://localhost:5173"],
@@ -18,7 +17,7 @@ app.use(
 
 dotenv.config();
 app.use(express.json());
-
+app.use(cookieParser());
 const PORT = process.env.PORT || 8080;
 const URI = process.env.MongoDBURI;
 
@@ -32,7 +31,7 @@ try {
 
 app.use("/api/ideas", ideaRoutes);
 app.use("/user", userRoute);
-app.use("/products", verifyToken, productRoutes);
+app.use("/products", productRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

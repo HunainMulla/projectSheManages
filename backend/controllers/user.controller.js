@@ -37,12 +37,10 @@ const signup = async (req, res) => {
     const accessToken = generateAccessToken(createUser._id);
     const refreshToken = generateRefreshToken(createUser._id);
 
-    // Set cookie for refresh token
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      // secure: process.env.NODE_ENV === "production", // true in production with HTTPS
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      secure: false, 
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
     });
 
     res.status(201).json({
@@ -55,7 +53,7 @@ const signup = async (req, res) => {
         profile: createUser.profile,
         phonenumber: createUser.phonenumber,
       },
-      token: accessToken, // client saves in localStorage
+      token: accessToken, 
     });
   } catch (error) {
     console.log("ERROR: " + error.message);
@@ -77,8 +75,7 @@ const login = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      // secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: false, 
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -92,7 +89,7 @@ const login = async (req, res) => {
         profile: user.profile,
         phonenumber: user.phonenumber,
       },
-      token: accessToken, // client saves in localStorage
+      token: accessToken, 
     });
   } catch (error) {
     console.log("ERROR: " + error.message);
@@ -175,8 +172,13 @@ const refreshAccessToken = (req, res) => {
 
 
 const logout = (req, res) => {
-  res.clearCookie("refreshToken");
-  res.json({ message: "Logged out successfully" });
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false, // true in prod
+    sameSite: "lax",
+    path: "/",     
+  });
+  res.status(200).json({ message: "Logged out successfully" });
 };
 
 
